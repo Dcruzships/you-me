@@ -35,6 +35,13 @@ let fore;
 let left;
 let right;
 
+let run = false;
+let together = false;
+let leadDir;
+let subDir;
+let leadSpeed = Math.random() * (5 - 2) + 2;
+let subSpeed = Math.random() * (5 - 2) + 2;
+
 // pre-load the images
 PIXI.loader.
 add([]).
@@ -151,6 +158,14 @@ function createScenes()
     sub.x = Math.floor(Math.random() * 480) + 500;
     sub.y = 400;
 
+    leadDir = Math.random() >= 0.5;
+    subDir = Math.random() >= 0.5;
+
+    if(together)
+    {
+      sub.x = lead.x + 50;
+    }
+
     gameScene.addChild(back);
     gameScene.addChild(lead);
     gameScene.addChild(sub);
@@ -263,27 +278,36 @@ function displayText()
 
 function createUI()
 {
-  left = PIXI.Sprite.fromImage("media/left.png");
-  left.buttonMode = true;
-  left.interactive = true;
-  left.anchor.set(.5);
-  left.x = 50;
-  left.y = 300;
-  left.on("pointerup", changeScene);
-  left.on('pointerover', e => e.target.alpha = 0.5);
-  left.on('pointerout', e => e.currentTarget.alpha = 1.0);
-  gameScene.addChild(left);
+  gameScene.removeChild(left);
+  gameScene.removeChild(right);
 
-  right = PIXI.Sprite.fromImage("media/right.png");
-  right.buttonMode = true;
-  right.interactive = true;
-  right.anchor.set(.5);
-  right.x = 850;
-  right.y = 300;
-  right.on("pointerup", changeScene);
-  right.on('pointerover', e => e.target.alpha = 0.5);
-  right.on('pointerout', e => e.currentTarget.alpha = 1.0);
-  gameScene.addChild(right);
+  if(currentScene != 0)
+  {
+    left = PIXI.Sprite.fromImage("media/left.png");
+    left.buttonMode = true;
+    left.interactive = true;
+    left.anchor.set(.5);
+    left.x = 50;
+    left.y = 300;
+    left.on("pointerup", changeScene);
+    left.on('pointerover', e => e.target.alpha = 0.5);
+    left.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    gameScene.addChild(left);
+  }
+
+  if(currentScene != 2)
+  {
+    right = PIXI.Sprite.fromImage("media/right.png");
+    right.buttonMode = true;
+    right.interactive = true;
+    right.anchor.set(.5);
+    right.x = 850;
+    right.y = 300;
+    right.on("pointerup", changeScene);
+    right.on('pointerover', e => e.target.alpha = 0.5);
+    right.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    gameScene.addChild(right);
+  }
 
   let line = new PIXI.Graphics();
   line.lineStyle(4, 0xFF0000, 1);
@@ -302,20 +326,8 @@ function createUI()
   square.y = 0;
   gameScene.addChild(square);
 
-  if (currentScene == 0)
-  {
-    left.visible = false;
-    gameScene.removeChild(left);
-  }
-  else
-  {
-    left.visible = true;
-  }
-
   if (currentScene == 2)
   {
-    right.visible = false;
-
     again = new PIXI.Text("again?", {
       font: "bold 30px Roboto",
       fill: '#e8df25'
@@ -326,11 +338,6 @@ function createUI()
     again.buttonMode = true;
     again.on("pointerup", reset);
     gameScene.addChild(again);
-  }
-  else
-  {
-    right.visible = true;
-    gameScene.removeChild(again);
   }
 }
 
@@ -412,13 +419,26 @@ function parseScenes()
           {
             choices[i] = "fish";
           }
-          if(lines[i].substring(x+1, x+2) == "r")
+          if(lines[i].substring(x+1, x+3) == "ro")
           {
             choices[i] = "robo";
           }
           if(lines[i].substring(x+1, x+2) == "l")
           {
             choices[i] = "lame";
+          }
+          if(lines[i].substring(x+1, x+2) == "h")
+          {
+            together = true;
+          }
+          if(lines[i].substring(x+1, x+3) == "ra")
+          {
+            run = true;
+          }
+          if(lines[i].substring(x+1, x+3) == "s")
+          {
+            run = false;
+            together = false;
           }
         }
         else
@@ -512,4 +532,68 @@ function reset()
 
 function gameLoop()
 {
+  if(scenes[currentScene] == "clouds")
+  {
+    if(run)
+    {
+      if(leadDir)
+      {
+        lead.x += leadSpeed;
+      }
+      else
+      {
+        lead.x -= leadSpeed;
+      }
+      if(lead.x > sceneWidth + 50 || lead.x < -50)
+      {
+        leadSpeed = Math.random() * (4 - 1) + 1;
+        leadDir = !leadDir;
+      }
+
+      if(subDir)
+      {
+        sub.x += subSpeed;
+      }
+      else
+      {
+        sub.x -= subSpeed;
+      }
+      if(sub.x > sceneWidth + 50 || sub.x < -50)
+      {
+        subSpeed = Math.random() * (4 - 2) + 1;
+        subDir = !subDir;
+      }
+    }
+
+    if(together)
+    {
+      if(leadDir)
+      {
+        lead.x += leadSpeed;
+        sub.x += leadSpeed;
+      }
+      else
+      {
+        lead.x -= leadSpeed;
+        sub.x -= leadSpeed;
+      }
+      if(subDir)
+      {
+        sub.x += leadSpeed;
+      }
+      else
+      {
+        sub.x -= leadSpeed;
+      }
+
+      if(lead.x > sceneWidth + 50 || lead.x < -50)
+      {
+        leadDir = !leadDir;
+      }
+      if(sub.x > sceneWidth + 50 || sub.x < -50)
+      {
+        subDir = !subDir;
+      }
+    }
+  }
 }

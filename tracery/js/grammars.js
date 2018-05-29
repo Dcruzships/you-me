@@ -11,7 +11,7 @@ var grammars = {
       urmy : ["your", "my"],
       urself : ["you", "myself"],
 
-      clouds : ["held hands", "stayed silent"],
+      clouds : ["held hands", "stayed silent", "ran"],
       shapes : ["dinosaurs", "fish", "robots", "lame"],
       chai : ["friends", "happy", "together"],
       mall : ["danced", "ate burritos", "said goodbye"],
@@ -31,7 +31,7 @@ var grammars = {
       whatever : ["something", "nothing"],
 
       stories :
-      ["One day #ui# asked about the clouds. Their shapes, their forms. #ui# called them !#shapes#. We\n\n#clouds#.",
+      ["One day #ui# asked about the clouds. Their shapes, their forms. #ui# called them !#shapes#. We\n\n!#clouds#.",
 
         "We went to church on a whim. #ui# genuflected before entering the aisle. #ui# didn't know the words to\n\nthe hymns. #ui# mumbled the lines of the our father and we left early.",
 
